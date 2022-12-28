@@ -13,7 +13,8 @@ class PrepareDate:
         annotations_address = os.path.join(address, "annotations/*.xml")
         annotations_path = glob.glob(annotations_address)
 
-
+    def read_xml_file(self,xml_file):
+        pass
 
 if(__name__=="__main__"):
     pass
