@@ -1,7 +1,7 @@
 from Config import Addresses
 import os
 import glob
-from bs4 import BeautifulSoup
+from DataStructures import ImageData
 
 class PrepareDate:
     def __init__(self):
@@ -14,8 +14,12 @@ class PrepareDate:
         annotations_address = os.path.join(address, "annotations/*.xml")
         annotations_path = glob.glob(annotations_address)
 
-    def read_xml_file(self,xml_file):
-        pass
+        image_data = []
+        for p in
+        imageData = ImageData.ImageData()
+        imageData.readImageData(image_path,annotation_path)
+
+
 
 if(__name__=="__main__"):
     pass
