@@ -11,9 +11,6 @@ class ImageData:
     def set_bounding_box(self,x_min,y_min,x_max,y_max):
         self.bounding_box = {"tl":(x_min,y_min),"bl":(x_min,y_max),"br":(x_max,y_max),"tr":(x_min,y_min)}
 
-    def readImageData(self):
-
-
 
 class XML_Data:
     def __init__(self):
