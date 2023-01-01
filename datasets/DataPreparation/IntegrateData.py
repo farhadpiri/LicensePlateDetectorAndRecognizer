@@ -64,8 +64,11 @@ class DataIntegration:
             # save annotation
             xml_path = img_path.replace(".jpeg", ".xml")
             [plate_exist, xmin, ymin, xmax, ymax, license_number] = self.read_xml_1(xml_path)
+            if(license_number=="number_plate"):
+                license_number="Unspecified"
             new_row = {"image_path": dst_path, "plate_exist": plate_exist, "xmin": xmin, "xmax": xmax, "ymin": ymin,
                        "ymax": ymax, "license_number": license_number}
+
             self.DataFrame = self.DataFrame.append(new_row, ignore_index=True)
 
     def prepare_3(self,dst_dir):
@@ -173,7 +176,7 @@ if(__name__=="__main__"):
     integrate_data.prepare_1(dst_dir)
     integrate_data.prepare_2(dst_dir)
     integrate_data.prepare_3(dst_dir)
-    integrate_data.prepare_4(dst_dir)
+    # integrate_data.prepare_4(dst_dir)
     integrate_data.prepare_7(dst_dir)
 
     integrate_data.save("data.xlsx")
