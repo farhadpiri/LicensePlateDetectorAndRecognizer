@@ -1,4 +1,6 @@
 import time
+import sys
+sys.path.insert(0, './ObjectDetector/YOLOv7/yolov7')
 
 import numpy as np
 
@@ -17,6 +19,7 @@ from ObjectDetector.YOLOv7.yolov7.utils.plots import plot_one_box
 from ObjectDetector.YOLOv7.yolov7.utils.torch_utils import select_device, load_classifier, time_synchronized, TracedModel
 from ObjectDetector.YOLOv7.yolov7.utils.datasets import letterbox
 
+
 class YOLO_Plate_Detector:
     def __init__(self):
         self.weights = DetectionConfig.weights
@@ -29,12 +32,14 @@ class YOLO_Plate_Detector:
         self.project = 'runs/detect'
         self.name = 'exp'
         self.exist_ok = False
-        self.augment = True
-        self.conf_thres = 0.25
-        self.iou_thres = 0.45
+        self.augment = False
+        self.conf_thres = DetectionConfig.conf_thres
+        self.iou_thres = DetectionConfig.iou_thres
         self.classes = [0,1]
         self.agnostic_nms = True
         self.path = "./"
+        self.stride = DetectionConfig.stride
+
 
     def detect(self,image):
 
@@ -85,7 +90,7 @@ class YOLO_Plate_Detector:
         t0 = time.time()
         im0s = image
         # Padded resize
-        img = letterbox(image, self.img_size, stride=self.stride)[0]
+        img = letterbox(image, imgsz, stride=self.stride)[0]
 
         # Convert
         img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416
@@ -127,7 +132,7 @@ class YOLO_Plate_Detector:
                 p, s, im0 = self.path , '', im0s
 
                 p = Path(p)  # to Path
-                save_path = str(save_dir / p.name)  # img.jpg
+                save_path = str(save_dir / p.name)  + "saved.png" # img.jpg
                 gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
                 if len(det):
                     # Rescale boxes from img_size to im0 size
@@ -153,7 +158,7 @@ class YOLO_Plate_Detector:
                 # Stream results
                 if view_img:
                     cv2.imshow(str(p), im0)
-                    cv2.waitKey(1)  # 1 millisecond
+                    cv2.waitKey(3000)  # 1 millisecond
 
                 # Save results (image with detections)
                 if save_img:
@@ -161,3 +166,5 @@ class YOLO_Plate_Detector:
                     print(f" The image with the result is saved in: {save_path}")
 
         print(f'Done. ({time.time() - t0:.3f}s)')
+
+        return pred
