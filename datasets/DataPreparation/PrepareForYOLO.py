@@ -9,23 +9,24 @@ import ntpath
 
 class PrepareForYOLO:
     def __init__(self):
+        self.root = "/content/drive/MyDrive/projects/LicensePlate/output_folder_2/YoloDataset_2/"
         self.train_folder = os.path.join(os.getcwd(),"YoloDataset/train")
         if(not os.path.isdir(self.train_folder)):
             os.mkdir(self.train_folder)
-            self.train_images_and_labels = os.path.join(self.train_folder,"train.txt")
-        with open(self.train_images_and_labels):
+        self.train_images_and_labels = os.path.join(os.getcwd(),"YoloDataset/train.txt")
+        with open(self.train_images_and_labels, "w"):
             pass
         self.val_folder = os.path.join(os.getcwd(),"YoloDataset/val")
         if(not os.path.isdir(self.val_folder)):
             os.mkdir(self.val_folder)
-        self.val_images_and_labels = os.path.join(self.train_folder, "val.txt")
-        with open(self.val_images_and_labels):
+        self.val_images_and_labels = os.path.join(os.getcwd(), "YoloDataset/val.txt")
+        with open(self.val_images_and_labels, "w"):
             pass
         self.test_folder = os.path.join(os.getcwd(),"YoloDataset/test")
         if(not os.path.isdir(self.test_folder)):
             os.mkdir(self.test_folder)
-        self.val_images_and_labels = os.path.join(self.train_folder, "val.txt")
-        with open(self.val_images_and_labels):
+        self.test_images_and_labels = os.path.join(os.getcwd(), "YoloDataset/test.txt")
+        with open(self.val_images_and_labels, "w"):
             pass
 
     def copy_image(self,path):
@@ -60,6 +61,9 @@ class PrepareForYOLO:
                     os.mkdir(train_label_dir)
                 dst_img_path = os.path.join(train_image_dir,tail)
                 dst_txt_path = os.path.join(train_label_dir,f"{name}.txt")
+                with open(self.train_images_and_labels, "a+") as f:
+                    f.write(self.root+"train/"+"images/"+tail + "\n")
+                    f.write(self.root+"train/"+"labels/"+f"{name}.txt"+ "\n")
             elif(r < 9):
                 val_image_dir = os.path.join(self.val_folder,"images")
                 val_label_dir = os.path.join(self.val_folder,"labels")
@@ -69,6 +73,9 @@ class PrepareForYOLO:
                     os.mkdir(val_label_dir)
                 dst_img_path = os.path.join(val_image_dir,tail)
                 dst_txt_path = os.path.join(val_label_dir,f"{name}.txt")
+                with open(self.val_images_and_labels, "a+") as f:
+                    f.write(self.root+"val/"+"images/"+tail + "\n")
+                    f.write(self.root+"val/"+"labels/"+f"{name}.txt"+ "\n")
             else:
                 test_image_dir = os.path.join(self.test_folder,"images")
                 test_label_dir = os.path.join(self.test_folder,"labels")
@@ -78,6 +85,9 @@ class PrepareForYOLO:
                     os.mkdir(test_label_dir)
                 dst_img_path = os.path.join(test_image_dir,tail)
                 dst_txt_path = os.path.join(test_label_dir,f"{name}.txt")
+                with open(self.test_images_and_labels, "a+") as f:
+                    f.write(self.root+"test/"+"images/"+tail + "\n")
+                    f.write(self.root+"test/"+"labels/"+f"{name}.txt"+ "\n")
 
             [x_c, y_c, w, h] = self.prepare_output(row, src_img_path,dst_img_path,add_label=False)
 
@@ -112,8 +122,8 @@ class PrepareForYOLO:
         ymin = int(int(row["ymin"])/image_scale + width_up)
 
 
-        x_c = int(xmin + (xmax - xmin) / 2)
-        y_c = int(ymin + (ymax - ymin) / 2)
+        x_c = int(xmin + (xmax - xmin) / 2) / img_size
+        y_c = int(ymin + (ymax - ymin) / 2) / img_size
         w = (xmax - xmin) / img_size
         h = (ymax - ymin) / img_size
 
