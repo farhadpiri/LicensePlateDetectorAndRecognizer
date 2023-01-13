@@ -3,12 +3,14 @@ import copy
 import cv2
 
 from ObjectDetector.YOLOv7.YOLO_Plate_Detector import YOLO_Plate_Detector
+from PlateRecognizer import PlateRecognizer
 import torch
 import numpy as np
 
 class PlateDtector:
     def __init__(self):
         self.plate_detector = YOLO_Plate_Detector()
+        self.plate_recognizer = PlateRecognizer()
 
 
     def xyxy2xywh(self,x):
@@ -22,15 +24,11 @@ class PlateDtector:
 
     def detect_plate(self,image):
 
-        plates = self.plate_detector.detect(copy.deepcopy(image))
-        if(len(plates) == 0):
+        plates_dets = self.plate_detector.detect(copy.deepcopy(image))
+        if(len(plates_dets) == 0):
             return "no plate detected"
-        for plate in plates:
-            for *xyxy, conf, cls in reversed(plate):
-                plate_image = image[int(xyxy[1]):int(xyxy[3]),int(xyxy[0]):int(xyxy[2])]
-                cv2.imshow("1",plate_image)
-                cv2.waitKey()
-                cv2.destroyAllWindows()
+
+        plate_numbers = self.plate_recognizer.recognize(plates_dets,image)
 
 
 
