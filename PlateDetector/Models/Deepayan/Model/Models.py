@@ -23,7 +23,7 @@ class CRNN(nn.Module):
     def __init__(self, opt, leakyRelu=False):
         super(CRNN, self).__init__()
 
-        assert opt['imgH'] % 16 == 0, 'imgH has to be a multiple of 16'
+        assert opt.imgH % 16 == 0, 'imgH has to be a multiple of 16'
 
         ks = [3, 3, 3, 3, 3, 3, 2]
         ps = [1, 1, 1, 1, 1, 1, 0]
@@ -33,7 +33,7 @@ class CRNN(nn.Module):
         cnn = nn.Sequential()
 
         def convRelu(i, batchNormalization=False):
-            nIn = opt['nChannels'] if i == 0 else nm[i - 1]
+            nIn = opt.nChannels if i == 0 else nm[i - 1]
             nOut = nm[i]
             cnn.add_module('conv{0}'.format(i),
                            nn.Conv2d(nIn, nOut, ks[i], ss[i], ps[i]))
@@ -46,7 +46,7 @@ class CRNN(nn.Module):
                 cnn.add_module('relu{0}'.format(i), nn.ReLU(True))
 
         convRelu(0)
-        cnn.add_module('pooling{0}'.format(0), nn.MaxPool2d(2, 2))  # 64x16x64
+        cnn.add_module('pooling{0}'.format(0), nn.MaxPool2d(3, 3))  # 64x16x64
         convRelu(1)
         cnn.add_module('pooling{0}'.format(1), nn.MaxPool2d(2, 2))  # 128x8x32
         convRelu(2, True)
@@ -61,8 +61,8 @@ class CRNN(nn.Module):
         self.cnn = cnn
         self.rnn = nn.Sequential()
         self.rnn = nn.Sequential(
-            BidirectionalLSTM(opt['nHidden']*2, opt['nHidden'], opt['nHidden']),
-            BidirectionalLSTM(opt['nHidden'], opt['nHidden'], opt['nClasses']))
+            BidirectionalLSTM(opt.nHidden*2, opt.nHidden, opt.nHidden),
+            BidirectionalLSTM(opt.nHidden, opt.nHidden, opt.nClasses))
 
 
     def forward(self, input):

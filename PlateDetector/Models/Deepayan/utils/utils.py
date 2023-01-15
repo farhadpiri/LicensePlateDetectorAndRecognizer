@@ -6,9 +6,25 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
+from textdistance import levenshtein as lev
+import re
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
+def similarity(word1, word2):
+    return lev.normalized_distance(word1, word2)
+
+def text_align(prWords, gtWords):
+    row, col = len(prWords), len(gtWords)
+    adjMat= np.zeros((row, col), dtype=float)
+    for i in range(len(prWords)):
+        for j in range(len(gtWords)):
+            adjMat[i, j] = similarity(prWords[i], gtWords[j])
+    pr_aligned=[]
+    for i in range(len(prWords)):
+        nn = list(map(lambda x:gtWords[x], np.argsort(adjMat[i, :])[:1]))
+        pr_aligned.append((prWords[i], nn[0]))
+    return pr_aligned
 
 class AverageMeter:
     def __init__(self, name):
@@ -145,7 +161,49 @@ class Eval:
             if math.isnan(score):
                 score = 0.0
             scores.append(score)
-        return
+        return scores
+
+
+    def _clean(self, word):
+        regex = re.compile('[%s]' % re.escape('!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~“”„'))
+        return regex.sub('', word)
+
+    def char_accuracy(self, pair):
+        words, truths = pair
+        words, truths = ''.join(words), ''.join(truths)
+        sum_edit_dists = lev.distance(words, truths)
+        sum_gt_lengths = sum(map(len, truths))
+        fraction = 0
+        if sum_gt_lengths != 0:
+            fraction = sum_edit_dists / sum_gt_lengths
+
+        percent = fraction * 100
+        if 100.0 - percent < 0:
+            return 0.0
+        else:
+            return 100.0 - percent
+
+    def word_accuracy(self, pair):
+        correct = 0
+        word, truth = pair
+        if self._clean(word) == self._clean(truth):
+            correct = 1
+        return correct
+
+    def format_target(self, target, target_sizes):
+        target_ = []
+        start = 0
+        for size_ in target_sizes:
+            target_.append(target[start:start + size_])
+            start += size_
+        return target_
+
+    def word_accuracy_line(self, pairs):
+        preds, truths = pairs
+        word_pairs = text_align(preds.split(), truths.split())
+        word_acc = np.mean((list(map(self.word_accuracy, word_pairs))))
+        return word_acc
+
 
 
 class EarlyStopping:
@@ -200,32 +258,6 @@ class EarlyStopping:
             print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ...')
         torch.save(state, self.save_file)
         self.val_loss_min = val_loss
-
-class PickleDataset(Dataset):
-    def __init__(self, opt):
-        super(PickleDataset, self).__init__()
-        pickle_file = os.path.join(opt.path, opt.imgdir, '%s.data.pkl'%opt.language)
-        with open(pickle_file, 'rb') as f:
-            self.data = pickle.load(f)
-        self.nSamples = len(self.data['train'])
-       	transform_list =  [transforms.Grayscale(1),
-                            transforms.ToTensor(),
-                            transforms.Normalize((0.5,), (0.5,))]
-        self.transform = transforms.Compose(transform_list)
-
-    def __len__(self):
-        return self.nSamples
-
-    def __getitem__(self, index):
-        assert index <= len(self), 'index range error'
-        img, label = self.data['train'][index]
-        img = Image.fromarray(img.astype(np.uint8))
-        if self.transform is not None:
-            img = self.transform(img)
-        item = {'img': img, 'idx':index}
-        item['label'] = label
-        return item
-
 
 def gmkdir(path):
     if not os.path.exists(path):

@@ -1,13 +1,16 @@
+from PIL import Image
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
 import os
 from tqdm import *
 import torch
+from PlateDetector.Models.Deepayan.utils import utils
 
 class SynthDataset(Dataset):
     def __init__(self, opt):
         super(SynthDataset,self).__init__()
-        self.path = os.path.join(opt['path'], opt['imgdir'])
+        self.path = os.path.join(opt.path, opt.imgdir)
+        utils.gmkdir(self.path)
         self.images = os.listdir(self.path)
         self.nSamples = len(self.images)
         f = lambda x: os.path.join(self.path, x)
@@ -18,6 +21,19 @@ class SynthDataset(Dataset):
         self.transform = transforms.Compose(transform_list)
         self.collate_fn = SynthCollator()
 
+    def __len__(self):
+        return self.nSamples
+
+    def __getitem__(self, index):
+        assert index <= len(self), 'index range error'
+        imagepath = self.imagepaths[index]
+        imagefile = os.path.basename(imagepath)
+        img = Image.open(imagepath)
+        if self.transform is not None:
+            img = self.transform(img)
+        item = {'img': img, 'idx':index}
+        item['label'] = imagefile.split('_')[0]
+        return item
 
 class SynthCollator(object):
 

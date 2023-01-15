@@ -6,9 +6,10 @@ import torch
 from torch import nn
 from torch.nn.utils import clip_grad_norm_
 from torch.optim.lr_scheduler import CosineAnnealingLR
-import tqdm
+from tqdm import *
 from torch.utils.data import random_split
 
+from PlateDetector.Models.Deepayan.Data.PickleDataset import PickleDataset
 from PlateDetector.Models.Deepayan.Model.Models import CRNN, CustomCTCLoss
 from PlateDetector.Models.Deepayan.utils import utils
 from collections import OrderedDict
@@ -17,21 +18,21 @@ from PlateDetector.Models.Deepayan.Data.DataSynthsis import SynthDataset, SynthC
 class OCRTrainer(object):
     def __init__(self, opt):
         super(OCRTrainer, self).__init__()
-        self.data_train = opt['data_train']
-        self.data_val = opt['data_val']
-        self.model = opt['model']
-        self.criterion = opt['criterion']
-        self.optimizer = opt['optimizer']
-        self.schedule = opt['schedule']
-        self.converter = utils.OCRLabelConverter(opt['alphabet'])
+        self.data_train = opt.data_train
+        self.data_val = opt.data_val
+        self.model = opt.model
+        self.criterion = opt.criterion
+        self.optimizer = opt.optimizer
+        self.schedule = opt.schedule
+        self.converter = utils.OCRLabelConverter(opt.alphabet)
         self.evaluator = utils.Eval()
         print('Scheduling is {}'.format(self.schedule))
-        self.scheduler = CosineAnnealingLR(self.optimizer, T_max=opt['epochs'])
-        self.batch_size = opt['batch_size']
-        self.count = opt['epoch']
-        self.epochs = opt['epochs']
-        self.cuda = opt['cuda']
-        self.collate_fn = opt['collate_fn']
+        self.scheduler = CosineAnnealingLR(self.optimizer, T_max=opt.epochs)
+        self.batch_size = opt.batch_size
+        self.count = opt.epoch
+        self.epochs = opt.epochs
+        self.cuda = opt.cuda
+        self.collate_fn = opt.collate_fn
         self.init_meters()
 
     def init_meters(self):
@@ -191,15 +192,15 @@ class Learner(object):
             print('checkpoint does not exist')
 
     def fit(self, opt):
-        opt['cuda'] = self.cuda
-        opt['model'] = self.model
-        opt['optimizer'] = self.optimizer
-        logging.basicConfig(filename="%s/%s.csv" % (opt['log_dir'], opt['name']), level=logging.INFO)
+        opt.cuda = self.cuda
+        opt.model = self.model
+        opt.optimizer = self.optimizer
+        logging.basicConfig(filename="%s/%s.csv" % (opt.log_dir, opt.name), level=logging.INFO)
         self.saver = utils.EarlyStopping(self.savepath, patience=15, verbose=True, best_score=self.best_score)
-        opt['epoch'] = self.epoch
+        opt.epoch = self.epoch
         trainer = OCRTrainer(opt)
 
-        for epoch in range(opt['epoch'], opt['epochs']):
+        for epoch in range(opt.epoch, opt.epochs):
             train_result = trainer.run_epoch()
             val_result = trainer.run_epoch(validation=True)
             trainer.count = epoch
@@ -248,7 +249,7 @@ if (__name__=="__main__"):
 
     args = parser.parse_args()
 
-    data = utils.PickleDataset(args)
+    data = SynthDataset(args)
     args.collate_fn = SynthCollator()
     train_split = int(0.8 * len(data))
     val_split = len(data) - train_split
