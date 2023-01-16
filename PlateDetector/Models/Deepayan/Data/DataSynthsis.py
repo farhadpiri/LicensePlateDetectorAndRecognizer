@@ -5,16 +5,16 @@ import os
 from tqdm import *
 import torch
 from PlateDetector.Models.Deepayan.utils import utils
+import pandas as pd
 
 class SynthDataset(Dataset):
     def __init__(self, opt):
         super(SynthDataset,self).__init__()
-        self.path = os.path.join(opt.path, opt.imgdir)
-        utils.gmkdir(self.path)
-        self.images = os.listdir(self.path)
-        self.nSamples = len(self.images)
-        f = lambda x: os.path.join(self.path, x)
-        self.imagepaths = list(map(f, self.images))
+        self.path = opt.imgdir
+        self.data = pd.read_excel(self.path)
+
+        self.nSamples = self.data.shape[0]
+
         transform_list = [transforms.Grayscale(1),
                           transforms.ToTensor(),
                           transforms.Normalize((0.5,), (0.5,))]
@@ -26,13 +26,14 @@ class SynthDataset(Dataset):
 
     def __getitem__(self, index):
         assert index <= len(self), 'index range error'
-        imagepath = self.imagepaths[index]
-        imagefile = os.path.basename(imagepath)
+        row = self.data.iloc[index]
+        imagepath = row["plate_path"]
+        # imagefile = os.path.basename(imagepath)
         img = Image.open(imagepath)
         if self.transform is not None:
             img = self.transform(img)
         item = {'img': img, 'idx':index}
-        item['label'] = imagefile.split('_')[0]
+        item['label'] = row["license_number"]
         return item
 
 class SynthCollator(object):
