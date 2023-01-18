@@ -237,7 +237,7 @@ if (__name__=="__main__"):
     parser.add_argument("--save_dir", type=str, default='saves')
 
     parser.add_argument("--lr", type=float, default=0.001)
-    parser.add_argument("--imgH", type=int, default=32)
+    parser.add_argument("--imgH", type=int, default=48)
     parser.add_argument("--nHidden", type=int, default=256)
     parser.add_argument("--nChannels", type=int, default=1)
     parser.add_argument("--resume", action='store_true')

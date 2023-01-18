@@ -33,7 +33,7 @@ class SynthDataset(Dataset):
         if self.transform is not None:
             img = self.transform(img)
         item = {'img': img, 'idx':index}
-        item['label'] = row["license_number"]
+        item['label'] = str(row["license_number"])
         return item
 
 class SynthCollator(object):

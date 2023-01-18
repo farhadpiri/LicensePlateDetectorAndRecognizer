@@ -94,6 +94,7 @@ class OCRLabelConverter(object):
         length = []
         result = []
         for item in text:
+            item=str(item)
             # item = item.decode('utf-8', 'strict')
             length.append(len(item))
             for char in item:

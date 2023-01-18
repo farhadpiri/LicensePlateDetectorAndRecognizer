@@ -5,6 +5,7 @@ import ntpath
 import os
 import cv2
 
+
 def from_excel():
     DataFrame = pd.DataFrame(columns = ["plate_path","license_number"])
     data_store = "F:\edu\LicensePlateDetector\datasets\DataPreparation\image_store"
@@ -22,8 +23,9 @@ def from_excel():
                 new_path = os.path.join(data_store,tail)
                 img = cv2.imread(new_path)
                 plate_img = img[row["ymin"]:row["ymax"],row["xmin"]:row['xmax'],:]
+                reshaped_img = cv2.resize(plate_img,(int(img.shape[1]* (48/img.shape[0])),48))
                 new_path = os.path.join(plate_store,tail)
-                cv2.imwrite(new_path,plate_img)
+                cv2.imwrite(new_path,reshaped_img)
                 new_row = {"plate_path":new_path, "license_number": license_number}
                 DataFrame = DataFrame.append(new_row, ignore_index=True)
         except:
