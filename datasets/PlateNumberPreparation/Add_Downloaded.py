@@ -15,7 +15,7 @@ def Add_downloaded1(name):
     char_map1 = {"0": "0", "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8",
                  "9": "9", "10": "A", "11": "B", "12": "C", "13": "D", "14": "E", "15": "F", "16": "G", "17": "H",
                  "18": "I",
-                 "19": "J", "20": "K", "21": "L", "22": "M", "23": "N", "24": "P", "25": "Q", "26": "R",
+                 "19": "J", "20": "K", "21": "L", "22": "M", "23": "N", "24": "O", "25": "P", "26": "R",
                  "27": "S", "28": "T", "29": "U", "30": "V", "31": "W", "32": "X", "33": "Y", "34": "Z"}
 
     df = pd.DataFrame(columns=["plate_path", "license_number"])
@@ -226,7 +226,8 @@ if(__name__=="__main__"):
     df3 = Add_downloaded3(name="03")
     df4 = Add_downloaded4(name="04")
     df5 = Add_downloaded5(name="05")
-    data = [df1, df2, df3, df4, df5]
+    df6 = pd.read_excel("plate_data.xlsx")
+    data = [df1, df2, df3, df4, df5,df6]
     df = pd.concat(data)
     df.to_excel("downloaded.xlsx")
 
