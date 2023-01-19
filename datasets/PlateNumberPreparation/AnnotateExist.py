@@ -10,7 +10,7 @@ def read_excel():
     df = pd.read_excel("data.xlsx")
 
     for idx, row in df.iterrows():
-        if(idx < 418):
+        if(idx < 0):
             continue
         path = row["image_path"]
         head, tail = ntpath.split(path)

@@ -6,6 +6,7 @@ from tqdm import *
 import torch
 from PlateDetector.Models.Deepayan.utils import utils
 import pandas as pd
+import cv2
 
 class SynthDataset(Dataset):
     def __init__(self, opt):
@@ -29,11 +30,19 @@ class SynthDataset(Dataset):
         row = self.data.iloc[index]
         imagepath = row["plate_path"]
         # imagefile = os.path.basename(imagepath)
+
+
         img = Image.open(imagepath)
         if self.transform is not None:
             img = self.transform(img)
         item = {'img': img, 'idx':index}
         item['label'] = str(row["license_number"])
+
+        if(index % 10 == 0):
+            img1 = cv2.imread(imagepath)
+            img1 = cv2.putText(img1,item['label'],(5,5),1,0.7,(0,0,255))
+            cv2.imwrite("img.png",img1)
+
         return item
 
 class SynthCollator(object):

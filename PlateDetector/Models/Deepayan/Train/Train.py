@@ -229,16 +229,16 @@ class Learner(object):
 
 if (__name__=="__main__"):
     parser = ArgumentParser()
-    parser.add_argument("--path", type=str, required=True)
+    parser.add_argument("--path", type=str, required=False)
     parser.add_argument("--name", type=str, required=True)
     parser.add_argument("--mode", type=str, default='train')
-    parser.add_argument("--imgdir", type=str, default='source_bold')
+    parser.add_argument("--imgdir", type=str, required=True)
     parser.add_argument("--log_dir", type=str, default='logs')
     parser.add_argument("--save_dir", type=str, default='saves')
 
     parser.add_argument("--lr", type=float, default=0.001)
     parser.add_argument("--imgH", type=int, default=48)
-    parser.add_argument("--nHidden", type=int, default=256)
+    parser.add_argument("--nHidden", type=int, default=512)
     parser.add_argument("--nChannels", type=int, default=1)
     parser.add_argument("--resume", action='store_true')
     parser.add_argument("--language", type=str, default='English')
