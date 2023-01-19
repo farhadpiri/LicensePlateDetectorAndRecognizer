@@ -44,6 +44,8 @@ class OCRTrainer(object):
         self.avgValWordAccuracy = utils.AverageMeter("Validation Word Accuracy")
 
     def forward(self, x):
+        if(torch.cuda.is_available()):
+            x = x.to(torch.device("cuda"))
         logits = self.model(x)
         return logits.transpose(1, 0)
 
