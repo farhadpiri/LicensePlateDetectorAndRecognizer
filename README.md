@@ -1,4 +1,4 @@
-# LicensePlateDetector
+# LicensePlateDetectorAndRecognizer
 
 ## A Simple License plate detector:
 
