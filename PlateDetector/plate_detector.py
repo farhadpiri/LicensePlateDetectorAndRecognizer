@@ -29,6 +29,7 @@ class PlateDtector:
             return "no plate detected"
 
         plate_numbers = self.plate_recognizer.recognize(plates_dets,image)
+        return plate_numbers
 
 
 

@@ -8,4 +8,5 @@ if(__name__=="__main__"):
     Address = "Cars183.png"
     img = cv2.imread(Address)
     plate_detector = PlateDtector()
-    plate_detector.detect_plate(img)
+    text = plate_detector.detect_plate(img)
+    print(text)

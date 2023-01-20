@@ -58,12 +58,16 @@ class PlateRecognizer():
         probs, pos = logits.max(2)
         pos = pos.transpose(1, 0).contiguous().view(-1)
         sim_preds = self.converter.decode(pos.data, pred_sizes.data, raw=False)
-        print(sim_preds)
-        a = 0
+        return sim_preds
 
     def recognize(self,plates_dets,image):
+        text_estimations = []
         for plate in plates_dets:
             for *xyxy, conf, cls in reversed(plate):
                 plate_image = image[int(xyxy[1]):int(xyxy[3]),int(xyxy[0]):int(xyxy[2])]
                 text_estimation = self.predict(plate_image)
+                text_estimations.append(text_estimation)
+        return text_estimations
+
+
 

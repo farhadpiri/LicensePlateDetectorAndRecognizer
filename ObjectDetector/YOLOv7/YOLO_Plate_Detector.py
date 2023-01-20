@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, './ObjectDetector/YOLOv7/yolov7')
 
 import numpy as np
-
+from Config import Addresses
 from Config.YOLOConfig import DetectionConfig
 import cv2
 import torch
@@ -37,7 +37,7 @@ class YOLO_Plate_Detector:
         self.iou_thres = DetectionConfig.iou_thres
         self.classes = [0,1]
         self.agnostic_nms = True
-        self.path = "./"
+        self.path = Addresses.YOLO_check_point_address
         self.stride = DetectionConfig.stride
 
 
