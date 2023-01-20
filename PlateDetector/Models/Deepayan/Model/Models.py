@@ -25,10 +25,10 @@ class CRNN(nn.Module):
 
         assert opt.imgH % 16 == 0, 'imgH has to be a multiple of 16'
 
-        ks = [5, 3, 3, 3, 3, 3, 3, 3, 2]
-        ps = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        ss = [1, 1, 1, 1, 1, 1, 1, 1, 1]
-        nm = [128, 256, 256, 512, 512, 512, 1024, 1024, 2048]
+        ks = [3, 3, 3, 3, 3, 3, 2]
+        ps = [1, 1, 1, 1, 1, 1, 0]
+        ss = [1, 1, 1, 1, 1, 1, 1]
+        nm = [64, 128, 256, 256, 512, 512, 512]
 
         cnn = nn.Sequential()
 
@@ -45,17 +45,19 @@ class CRNN(nn.Module):
             else:
                 cnn.add_module('relu{0}'.format(i), nn.ReLU(True))
 
-        convRelu(0, True)
-        convRelu(1, True)
-        convRelu(2, True)
+        convRelu(0)
         cnn.add_module('pooling{0}'.format(0), nn.MaxPool2d(2, 2))  # 64x16x64
-        convRelu(3, True)
-        convRelu(4, True)
+        convRelu(1)
         cnn.add_module('pooling{0}'.format(1), nn.MaxPool2d(2, 2))  # 128x8x32
-        convRelu(5, True)
-        convRelu(6, True)
-        convRelu(7, True)
-        convRelu(8, True)  # 512x1x16
+        convRelu(2, True)
+        convRelu(3)
+        cnn.add_module('pooling{0}'.format(2),
+                       nn.MaxPool2d((2, 2), (2, 1), (0, 1)))  # 256x4x16
+        convRelu(4, True)
+        convRelu(5)
+        cnn.add_module('pooling{0}'.format(3),
+                       nn.MaxPool2d((2, 2), (2, 1), (0, 1)))  # 512x2x16
+        convRelu(6, True)  # 512x1x16
         self.cnn = cnn
         self.rnn = nn.Sequential()
         self.rnn = nn.Sequential(
