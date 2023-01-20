@@ -90,7 +90,7 @@ def main(**kwargs):
     resume_file = os.path.join(args.save_dir, args.name, 'best.ckpt')
     if os.path.isfile(resume_file):
         print('Loading model %s' % resume_file)
-        checkpoint = torch.load(resume_file, map_location=torch.device('cpu'))
+        checkpoint = torch.load(resume_file, map_location=torch.device(device))
         model.load_state_dict(checkpoint['state_dict'])
         args.model = model
         ca, wa = get_accuracy(args)

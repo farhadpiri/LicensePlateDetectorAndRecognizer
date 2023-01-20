@@ -3,7 +3,7 @@ import copy
 import cv2
 
 from ObjectDetector.YOLOv7.YOLO_Plate_Detector import YOLO_Plate_Detector
-from PlateRecognizer import PlateRecognizer
+from PlateDetector.PlateRecognizer import PlateRecognizer
 import torch
 import numpy as np
 
