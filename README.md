@@ -9,8 +9,14 @@ and download OCR weights from [here](https://drive.google.com/drive/folders/1iR-
 
 Altough this model is not a perfect one but it is good excesice for both object detection and recognition
 
-##EXAMPLE
+## EXAMPLE
 
 <img src="Cars183.png" alt="MarineGEO circle logo" style="height: 640px; width:640px;"/>
 
 prediction: "BRIT0001"
+
+## References
+
+[deepayan](https://deepayan137.github.io/blog/markdown/2020/08/29/building-ocr.html)
+
+[Yolov7](https://github.com/WongKinYiu/yolov7)
